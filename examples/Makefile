@@ -1,54 +1,30 @@
 OCAMLC=ocamlfind ocamlc -g -thread -package session-ocaml,session-ocaml.ppx -rectypes -short-paths
-OCAMLOPT=ocamlfind ocamlc -thread -package session-ocaml,session-ocaml.ppx -rectypes -short-paths
+OCAMLOPT=ocamlfind ocamlopt -thread -package session-ocaml,session-ocaml.ppx -rectypes -short-paths
 OCAMLMKTOP=ocamlfind ocamlmktop -thread -package session-ocaml -rectypes
 OCAMLDEP=ocamlfind ocamldep -package session-ocaml
 
-EXAMPLES=ex_single1 ex_single2 ex_multi1 ex_multi2 travel_agency smtp smtp2
+EXAMPLES=smtp2
 
 EXAMPLES_BYTE = $(EXAMPLES:%=%.byte)
+EXAMPLES_NATIVE = $(EXAMPLES:%=%.native)
 
 
-all: $(EXAMPLES_BYTE)
-
-smtp2.byte: smtp2.cmo
-	$(OCAMLC) -package session-ocaml.net -linkpkg -o $@ $^
-
-smtp2: smtp2.cmx
-	$(OCAMLOPT) -package session-ocaml.net -linkpkg -o $@ $^
-
-ex_single2.byte: ex_single1.cmo ex_single2.cmo
-	$(OCAMLC) -linkpkg -o $@ $^
-
-ex_single2: ex_single1.cmx ex_single2.cmx
-	$(OCAMLOPT) -linkpkg -o $@ $^
-
-ex_multi1.byte: ex_single1.cmo ex_single2.cmo ex_multi1.cmo
-	$(OCAMLC) -linkpkg -o $@ $^
-
-ex_multi1: ex_single1.cmx ex_single2.cmx ex_multi1.cmx
-	$(OCAMLOPT) -linkpkg -o $@ $^
-
-%.byte: %.cmo
-	$(OCAMLC) -linkpkg -o $@ $^
-
+all: $(EXAMPLES_BYTE) $(EXAMPLES_NATIVE)
 
 # Common rules
-.SUFFIXES: .ml .mli .cmo .cmi .cmx
+.SUFFIXES: .ml .mli .cmo .cmi .cmx .byte .native
 
-smtp2.cmo: smtp2.ml
-	$(OCAMLC) -package session-ocaml.net -c $<
+.cmo.byte:
+	$(OCAMLC) -package session-ocaml.net -linkpkg -o $@ $^
 
-smtp2.cmx: smtp2.ml
-	$(OCAMLOPT) -package session-ocaml.net -c $<
+.cmx.native:
+	$(OCAMLOPT) -package session-ocaml.net -linkpkg -o $@ $^
 
 .ml.cmo:
-	$(OCAMLC) -c $<
-
-.mli.cmi:
-	$(OCAMLC) -c $<
+	$(OCAMLC) -package session-ocaml.net -c $<
 
 .ml.cmx:
-	$(OCAMLOPT) -c $<
+	$(OCAMLOPT) -package session-ocaml.net -c $< 
 
 # Clean up
 clean:
