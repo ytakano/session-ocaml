@@ -3,7 +3,7 @@ OCAMLOPT=ocamlfind ocamlopt -thread -package session-ocaml,session-ocaml.ppx -re
 OCAMLMKTOP=ocamlfind ocamlmktop -thread -package session-ocaml -rectypes
 OCAMLDEP=ocamlfind ocamldep -package session-ocaml
 
-EXAMPLES=smtp2
+EXAMPLES=smtp2 example_journal1 example_journal2
 
 EXAMPLES_BYTE = $(EXAMPLES:%=%.byte)
 EXAMPLES_NATIVE = $(EXAMPLES:%=%.native)
@@ -21,10 +21,10 @@ all: $(EXAMPLES_BYTE) $(EXAMPLES_NATIVE)
 	$(OCAMLOPT) -package session-ocaml.net -linkpkg -o $@ $^
 
 .ml.cmo:
-	$(OCAMLC) -package session-ocaml.net -c $<
+	$(OCAMLC) -c $<
 
 .ml.cmx:
-	$(OCAMLOPT) -package session-ocaml.net -c $< 
+	$(OCAMLOPT) -c $< 
 
 # Clean up
 clean:
